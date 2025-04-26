@@ -14,6 +14,7 @@ const db = require("./db");
 async function processMessage(phone, text) {
   const user = await getUserState(phone);
   console.log(text);
+  console.log(phone);
 
   switch (user.current_state) {
     case "INITIAL":
