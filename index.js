@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 // Webhook Verification (WhatsApp requirement)
 app.get("/webhook", (req, res) => {
-  if (req.query["hub.verify_token"] === process.env.WHATSAPP_TOKEN) {
+  if (req.query["hub.verify_token"] === process.env.VERIFY_WHATS_APP_TOKEN) {
     res.status(200).send(req.query["hub.challenge"]);
   } else {
     res.sendStatus(403);
