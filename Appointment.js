@@ -13,9 +13,8 @@ const db = require("./db");
 // Process incoming messages
 async function processMessage(phone, text) {
   const user = await getUserState(phone);
-  console.log(text);
-  console.log(phone);
 
+  console.log(`user state is ${user.current_state}`);
   switch (user.current_state) {
     case "INITIAL":
       return handleInitialState(phone);
@@ -74,7 +73,10 @@ async function handleConfirmation(phone, text) {
   const currentTime = today.toTimeString().split(" ")[0];
 
   if (!today) {
-    return sendWhatsAppMessage(phone, "❌ Invalid date. Use DD/MM format.");
+    return sendInvalidWhatsAppMessage(
+      phone,
+      "❌ Invalid date. Use DD/MM format."
+    );
   }
 
   // Check doctor availability
