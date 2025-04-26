@@ -39,7 +39,7 @@ async function handleConfirmed(phone, text) {
     `INSERT INTO user_states (phone_number, current_state) 
      VALUES ($1, 'INITIAL')
      ON CONFLICT (phone_number) 
-     DO UPDATE SET current_state = 'INITIAL', updated_at = NOW()`,
+     DO UPDATE SET current_state = 'UNKNOWN', updated_at = NOW()`,
     [phone]
   );
   await sendThanksForConfirmationWhatsAppMessage(phone, reply);
