@@ -36,6 +36,21 @@ app.post("/webhook", async (req, res) => {
 
   console.log(`here is the entry 123 ${entry}`);
   console.log(`here is message 124 ${message}`);
+  const body = req.body;
+
+  if (body.object) {
+    const entry = body.entry?.[0];
+    const change = entry?.changes?.[0];
+    const message = change?.value?.messages?.[0];
+    console.log(`phone is 126 ${change}`);
+    console.log(`message is  125 ${message}`);
+  }
+
+  if (message && message.type === "text") {
+    const from = message.from; // User's phone number (e.g., "9198xxxxxx")
+    const userText = message.text.body; // Actual text message sent
+  }
+
   if (message) {
     const phone = message.from;
     const text = message.text?.body || "";
