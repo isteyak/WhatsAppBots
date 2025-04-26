@@ -35,6 +35,13 @@ module.exports = { processMessage };
 async function handleConfirmed(phone, text) {
   const user = await getUserState(phone);
   const reply = "confirmaiton happeds";
+  await db.query(
+    `INSERT INTO user_states (phone_number, current_state) 
+     VALUES ($1, 'INITIAL')
+     ON CONFLICT (phone_number) 
+     DO UPDATE SET current_state = 'INITIAL', updated_at = NOW()`,
+    [phone]
+  );
   await sendThanksForConfirmationWhatsAppMessage(phone, reply);
 }
 
