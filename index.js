@@ -37,6 +37,7 @@ app.post("/webhook", async (req, res) => {
   console.log(`here is the entry 123 ${entry}`);
   console.log(`here is message 124 ${message}`);
   const body = req.body;
+  console.log(`body is ${body}`);
 
   if (body.object) {
     const entry = body.entry?.[0];
