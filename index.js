@@ -15,7 +15,7 @@ app.use("/api/doctors", doctorsRouter);
 // This works for both local development and Vercel
 app.get("/", (req, res) => {
   var sn = process.env.DATABASE_URL;
-  res.send("Hello World from Node.js server deployed on Vercel!");
+  res.send("Hello World from Node.js server deployed on Vercel! Gap");
 });
 
 // Webhook Verification (WhatsApp requirement)
