@@ -34,7 +34,7 @@ module.exports = { processMessage };
 
 async function handleConfirmed(phone, text) {
   const user = await getUserState(phone);
-
+  const reply = "confirmaiton happeds";
   await sendThanksForConfirmationWhatsAppMessage(phone, reply);
 }
 
