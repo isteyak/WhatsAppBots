@@ -34,13 +34,13 @@ app.post("/webhook", async (req, res) => {
   const entry = req.body.entry?.[0];
   const message = entry?.changes?.[0]?.value?.messages?.[0];
 
-  console.log(entry);
-  console.log(message);
+  console.log(`here is the entry 123 ${entry}`);
+  console.log(`here is message 124 ${message}`);
   if (message) {
     const phone = message.from;
     const text = message.text?.body || "";
-    console.log(`phone is ${phone}`);
-    console.log(`message is ${text}`);
+    console.log(`phone is 126 ${phone}`);
+    console.log(`message is  125 ${text}`);
     await processMessage(phone, text);
   }
 

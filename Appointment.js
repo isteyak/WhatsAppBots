@@ -4,6 +4,7 @@ const {
   sendAppionmentWhatsAppMessage,
   sendSelectionDateWhatsAppMessage,
   sendInvalidWhatsAppMessage,
+  sendThanksForConfirmationWhatsAppMessage,
 } = require("./SendMessages");
 const { parseDate } = require("./ParseDate");
 const db = require("./db");
@@ -14,7 +15,8 @@ const db = require("./db");
 async function processMessage(phone, text) {
   const user = await getUserState(phone);
 
-  console.log(`user state is ${user.current_state}`);
+  console.log(`user state is 101 ${user.current_state}`);
+
   switch (user.current_state) {
     case "INITIAL":
       return handleInitialState(phone);
@@ -22,11 +24,19 @@ async function processMessage(phone, text) {
       return handleDateSelection(phone, text);
     case "CONFIRMATION":
       return handleConfirmation(phone, text);
+    case "CONFIRMED":
+      return handleConfirmed(phone, text);
     default:
       return handleInitialState(phone);
   }
 }
 module.exports = { processMessage };
+
+async function handleConfirmed(phone, text) {
+  const user = await getUserState(phone);
+
+  await sendThanksForConfirmationWhatsAppMessage(phone, reply);
+}
 
 async function handleDateSelection(phone, text) {
   const user = await getUserState(phone);
@@ -61,16 +71,18 @@ async function handleConfirmation(phone, text) {
   //const date = parseDate(text); // DD/MM → Date object
   const user = await getUserState(phone);
   const today = new Date();
-  const tomorrow = new Date();
+  const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  const formatDate = (date) => date.toISOString().split("T")[0];
+
+  const formatDate = (date) => date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const formatTime = (date) => date.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
 
   const todayStr = formatDate(today);
   const tomorrowStr = formatDate(tomorrow);
+  const currentTime = formatTime(today);
 
   console.log("Today:", todayStr); // e.g., "2025-04-26"
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
-  const currentTime = today.toTimeString().split(" ")[0];
 
   if (!today) {
     return sendInvalidWhatsAppMessage(
@@ -108,11 +120,11 @@ async function handleConfirmation(phone, text) {
      DO UPDATE SET 
        doctor_id = EXCLUDED.doctor_id,
        date = EXCLUDED.date,
-       time = EXCLUDED.time
+       time = EXCLUDED.time,
        status = EXCLUDED.status,
        payment_status = EXCLUDED.payment_status,
        reminder_sent = EXCLUDED.reminder_sent`,
-    [1, p.id, today, currentTime, "confirm", "pending", false]
+    [1, p.id, todayStr, currentTime, "confirmed", "pending", false]
   );
 
   const reply = "Confirmation is happening";
