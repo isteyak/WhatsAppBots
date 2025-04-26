@@ -16,7 +16,7 @@ app.use("/api/doctors", doctorsRouter);
 app.get("/", (req, res) => {
   var sn = process.env.DATABASE_URL;
   res.send(
-    `Hello World from Node.js server deployed on Vercel! Gap ${process.env.DATABASE_URL} ${process.env.WHATSAPP_TOKEN}`
+    `Hello World from Node.js server deployed on Vercel! Gap Going Great`
   );
 });
 
