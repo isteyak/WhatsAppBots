@@ -71,7 +71,7 @@ async function handleConfirmation(phone, text) {
 
   console.log("Today:", todayStr); // e.g., "2025-04-26"
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
-  const currentTime = now.toTimeString().split(" ")[0];
+  const currentTime = today.toTimeString().split(" ")[0];
 
   if (!today) {
     return sendWhatsAppMessage(phone, "❌ Invalid date. Use DD/MM format.");
