@@ -1,6 +1,6 @@
 ### 1. Start booking flow
 ### Test booking flow
-POST https://whats-app-bots.vercel.app/webhook
+POST https://whats-app-bots-git-main-isteyaks-projects.vercel.app/webhook
 Content-Type: application/json
 
 {
