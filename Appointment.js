@@ -70,6 +70,7 @@ async function handleConfirmation(phone, text) {
 
   console.log("Today:", todayStr); // e.g., "2025-04-26"
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
+  const currentTime = now.toTimeString().split(" ")[0];
 
   if (!today) {
     return sendWhatsAppMessage(phone, "❌ Invalid date. Use DD/MM format.");
@@ -98,16 +99,17 @@ async function handleConfirmation(phone, text) {
 
   await db.query(
     `INSERT INTO public.appointments 
-      (doctor_id, patient_id, date, status, payment_status, reminder_sent) 
-     VALUES ($1, $2, $3, $4, $5, $6)
+      (doctor_id, patient_id, date, time, status, payment_status, reminder_sent) 
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      ON CONFLICT (patient_id) 
      DO UPDATE SET 
        doctor_id = EXCLUDED.doctor_id,
        date = EXCLUDED.date,
+       time = EXCLUDED.time
        status = EXCLUDED.status,
        payment_status = EXCLUDED.payment_status,
        reminder_sent = EXCLUDED.reminder_sent`,
-    [1, p.id, today, "confirm", "pending", false]
+    [1, p.id, today, currentTime, "confirm", "pending", false]
   );
 
   const reply = "Confirmation is happening";
