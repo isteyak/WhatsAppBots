@@ -212,7 +212,7 @@ async function sendSelectionDateWhatsAppMessage(
  */
 async function sendThanksForConfirmationWhatsAppMessage(
   phone,
-  message,
+  date,
   messageType = "text"
 ) {
   try {
@@ -224,13 +224,22 @@ async function sendThanksForConfirmationWhatsAppMessage(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: "whatsapp",
-        to: phone,
+        recipient_type: "individual",
+        to: phone, // must be in international format e.g. "919812345678"
         type: "template",
         template: {
-          name: "confirmed_message",
+          name: "confirmed_message", // make sure this matches EXACTLY
           language: {
-            code: "en",
+            code: "en", // or "en_US" depending on how the template was created
           },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", parameter_name: "date", text: date },
+              ],
+            },
+          ],
         },
       },
       {

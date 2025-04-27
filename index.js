@@ -36,8 +36,33 @@ app.post("/webhook", async (req, res) => {
 
   console.log(`here is the entry 123 ${entry}`);
   console.log(`here is message 124 ${message}`);
-  const body = req.body;
+
   console.log(`body is ${body}`);
+
+  // Parse the request body from the POST
+  let body = req.body;
+
+  // Check the Incoming webhook message
+  console.log(JSON.stringify(req.body, null, 2));
+
+  // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
+  if (req.body.object) {
+    if (
+      req.body.entry &&
+      req.body.entry[0].changes &&
+      req.body.entry[0].changes[0] &&
+      req.body.entry[0].changes[0].value.messages &&
+      req.body.entry[0].changes[0].value.messages[0]
+    ) {
+      let phone_number_id =
+        req.body.entry[0].changes[0].value.metadata.phone_number_id;
+      let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+      let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
+      console.log(phone_number_id);
+      console.log(from);
+      console.log(msg_body);
+    }
+  }
 
   if (body.object) {
     const entry = body.entry?.[0];

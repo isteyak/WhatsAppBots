@@ -35,6 +35,9 @@ module.exports = { processMessage };
 async function handleConfirmed(phone, text) {
   const user = await getUserState(phone);
   const reply = "confirmaiton happeds";
+  const today = new Date();
+  const formatDate = (date) => date.toISOString().split("T")[0];
+  const todayStr = formatDate(today);
   await db.query(
     `INSERT INTO user_states (phone_number, current_state) 
      VALUES ($1, 'INITIAL')
@@ -42,7 +45,7 @@ async function handleConfirmed(phone, text) {
      DO UPDATE SET current_state = 'UNKNOWN', updated_at = NOW()`,
     [phone]
   );
-  await sendThanksForConfirmationWhatsAppMessage(phone, reply);
+  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr);
 }
 
 async function handleDateSelection(phone, text) {
