@@ -6,54 +6,6 @@ const axios = require("axios");
  * @param {string} message - Text message to send
  * @param {string} [messageType="text"] - Type of message (text, image, etc.)
  */
-async function sendWhatsAppMessage(phone, message, messageType = "text") {
-  try {
-    if (messageType !== "text") {
-      throw new Error("Currently, only 'text' messages are supported.");
-    }
-
-    const response = await axios.post(
-      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-      {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: "appointment",
-          language: {
-            code: "en",
-          },
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log("✅ Message sent:", JSON.stringify(response.data, null, 2));
-  } catch (error) {
-    console.error(
-      "❌ Error response:",
-      JSON.stringify(error.response?.data, null, 2)
-    );
-
-    // console.error(
-    //   "❌ Error sending message:",
-    //   error.response?.data || error.message
-    // );
-    throw error;
-  }
-}
-
-/**
- * Sends a WhatsApp message to a user
- * @param {string} phone - Recipient phone number (with country code, e.g., "911234567890")
- * @param {string} message - Text message to send
- * @param {string} [messageType="text"] - Type of message (text, image, etc.)
- */
 async function sendInvalidWhatsAppMessage(
   phone,
   message,
@@ -109,6 +61,7 @@ async function sendInvalidWhatsAppMessage(
 async function sendAppionmentWhatsAppMessage(
   phone,
   message,
+  drName,
   messageType = "text"
 ) {
   try {
@@ -127,6 +80,12 @@ async function sendAppionmentWhatsAppMessage(
           language: {
             code: "en",
           },
+          components: [
+            {
+              type: "header",
+              parameters: [{ type: "text", text: drName }],
+            },
+          ],
         },
       },
       {
@@ -161,6 +120,9 @@ async function sendAppionmentWhatsAppMessage(
 async function sendSelectionDateWhatsAppMessage(
   phone,
   message,
+  dynamo,
+  today,
+  tommorrow,
   messageType = "text"
 ) {
   try {
@@ -179,6 +141,16 @@ async function sendSelectionDateWhatsAppMessage(
           language: {
             code: "en_US",
           },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", parameter_name: "dynamo", text: dynamo },
+                { type: "text", parameter_name: "today", text: today },
+                { type: "text", parameter_name: "tomorrow", text: tommorrow },
+              ],
+            },
+          ],
         },
       },
       {
@@ -274,6 +246,7 @@ async function sendThanksForConfirmationWhatsAppMessage(
 async function sendFinalConfirmationWhatsAppMessage(
   phone,
   message,
+  date,
   messageType = "text"
 ) {
   try {
@@ -292,6 +265,12 @@ async function sendFinalConfirmationWhatsAppMessage(
           language: {
             code: "en",
           },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", text: date }],
+            },
+          ],
         },
       },
       {
@@ -365,11 +344,59 @@ async function invalid_selection(phone, message, messageType = "text") {
   }
 }
 
+/**
+ * Sends a WhatsApp message to a user
+ * @param {string} phone - Recipient phone number (with country code, e.g., "911234567890")
+ * @param {string} message - Text message to send
+ * @param {string} [messageType="text"] - Type of message (text, image, etc.)
+ */
+async function sendErrorWhatsAppMessage(phone, message, messageType = "text") {
+  try {
+    if (messageType !== "text") {
+      throw new Error("Currently, only 'text' messages are supported.");
+    }
+
+    const response = await axios.post(
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to: phone,
+        type: "template",
+        template: {
+          name: "invalid_selection",
+          language: {
+            code: "en_US",
+          },
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("✅ Message sent:", JSON.stringify(response.data, null, 2));
+  } catch (error) {
+    console.error(
+      "❌ Error response:",
+      JSON.stringify(error.response?.data, null, 2)
+    );
+
+    // console.error(
+    //   "❌ Error sending message:",
+    //   error.response?.data || error.message
+    // );
+    throw error;
+  }
+}
+
 module.exports = {
   sendAppionmentWhatsAppMessage,
-  sendWhatsAppMessage,
   sendSelectionDateWhatsAppMessage,
   sendFinalConfirmationWhatsAppMessage,
   sendInvalidWhatsAppMessage,
+  sendErrorWhatsAppMessage,
   sendThanksForConfirmationWhatsAppMessage,
 };

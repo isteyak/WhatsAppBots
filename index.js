@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { processMessage } = require("./Appointment");
+const { processMessage, processInitialMessage } = require("./Appointment");
 const doctorsRouter = require("./routes/doctors");
 
 //import processMessage from "./Appointment.js";
@@ -16,7 +16,7 @@ app.use("/api/doctors", doctorsRouter);
 app.get("/", (req, res) => {
   var sn = process.env.DATABASE_URL;
   res.send(
-    `Hello World from Node.js server deployed on Vercel! Gap Going Great huh ${process.env.VERIFY_WHATS_APP_TOKEN}`
+    `Hello World from Node.js server deployed on Vercel! Gap Going Great huh. ${process.env.VERIFY_WHATS_APP_TOKEN}`
   );
 });
 
@@ -31,51 +31,56 @@ app.get("/webhook", (req, res) => {
 
 // WhatsApp Webhook (for incoming messages)
 app.post("/webhook", async (req, res) => {
-  const entry = req.body.entry?.[0];
-  const message = entry?.changes?.[0]?.value?.messages?.[0];
+  try {
+    const entry = req.body.entry?.[0];
+    const message = entry?.changes?.[0]?.value?.messages?.[0];
 
-  // Check the Incoming webhook message
-  console.log(JSON.stringify(req.body, null, 2));
+    // Check the Incoming webhook message
+    console.log(JSON.stringify(req.body, null, 2));
 
-  // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
-  const body = req.body;
+    // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
+    const body = req.body;
 
-  if (body.object === "whatsapp_business_account") {
-    const entry = body.entry?.[0];
-    const change = entry?.changes?.[0];
-    const value = change?.value;
+    if (body.object === "whatsapp_business_account") {
+      const entry = body.entry?.[0];
+      const change = entry?.changes?.[0];
+      const value = change?.value;
 
-    const message = value?.messages?.[0];
-    const contact = value?.contacts?.[0];
+      const message = value?.messages?.[0];
+      const contact = value?.contacts?.[0];
 
-    const messageType = message?.type;
-    let messageText = null;
+      const messageType = message?.type;
+      let messageText = null;
 
-    // Handle button and text types
-    if (messageType === "button") {
-      messageText = message?.button?.text;
-    } else if (messageType === "text") {
-      messageText = message?.text?.body;
+      // Handle button and text types
+      if (messageType === "button") {
+        messageText = message?.button?.text;
+      } else if (messageType === "text") {
+        messageText = message?.text?.body;
+      }
+
+      const from = message?.from;
+      const profileName = contact?.profile?.name;
+      const waId = contact?.wa_id;
+
+      console.log("👤 Profile Name:", profileName);
+      console.log("📞 WhatsApp ID:", waId);
+      console.log("📨 Message Type:", messageType);
+      console.log("📤 From:", from);
+      console.log("📝 Message Text:", messageText);
+
+      if (messageType === "button") {
+        await processMessage(from, messageText);
+      } else {
+        await processInitialMessage(from, messageText);
+      }
     }
 
-    const from = message?.from;
-    const profileName = contact?.profile?.name;
-    const waId = contact?.wa_id;
-
-    console.log("👤 Profile Name:", profileName);
-    console.log("📞 WhatsApp ID:", waId);
-    console.log("📨 Message Type:", messageType);
-    console.log("📤 From:", from);
-    console.log("📝 Message Text:", messageText);
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
   }
-
-  if (message) {
-    const phone = message.from;
-    const text = message.text?.body || "";
-    await processMessage(phone, text);
-  }
-
-  res.sendStatus(200);
 });
 
 // Export the Express app for Vercel

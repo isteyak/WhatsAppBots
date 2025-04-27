@@ -1,21 +1,17 @@
 const {
-  sendWhatsAppMessage,
   sendFinalConfirmationWhatsAppMessage,
   sendAppionmentWhatsAppMessage,
   sendSelectionDateWhatsAppMessage,
   sendInvalidWhatsAppMessage,
+  sendErrorWhatsAppMessage,
   sendThanksForConfirmationWhatsAppMessage,
 } = require("./SendMessages");
 const { parseDate } = require("./ParseDate");
 const db = require("./db");
-//import { sendWhatsAppMessage } from "./SendMessages";
-//import { parseDate } from "./ParseDate";
 
 // Process incoming messages
 async function processMessage(phone, text) {
   const user = await getUserState(phone);
-
-  console.log(`user state is 101 ${user.current_state}`);
 
   switch (user.current_state) {
     case "INITIAL":
@@ -30,7 +26,19 @@ async function processMessage(phone, text) {
       return handleInitialState(phone);
   }
 }
-module.exports = { processMessage };
+
+async function processInitialMessage(phone, text) {
+  await db.query(
+    `INSERT INTO user_states (phone_number, current_state) 
+     VALUES ($1, 'DATE_SELECTION')
+     ON CONFLICT (phone_number) 
+     DO UPDATE SET current_state = 'DATE_SELECTION', updated_at = NOW()`,
+    [phone]
+  );
+  await sendAppionmentWhatsAppMessage(phone, text, "Amir Ansari");
+}
+
+module.exports = { processMessage, processInitialMessage };
 
 async function handleConfirmed(phone, text) {
   const user = await getUserState(phone);
@@ -63,7 +71,11 @@ async function handleDateSelection(phone, text) {
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
 
   if (!today) {
-    return sendWhatsAppMessage(phone, "❌ Invalid date. Use DD/MM format.");
+    return sendAppionmentWhatsAppMessage(
+      phone,
+      "❌ Invalid date. Use DD/MM format.",
+      "Amir"
+    );
   }
 
   // Check doctor availability
@@ -74,7 +86,13 @@ async function handleDateSelection(phone, text) {
     ["CONFIRMATION", today, phone]
   );
   const reply = "date selection happening";
-  await sendSelectionDateWhatsAppMessage(phone, reply);
+  await sendSelectionDateWhatsAppMessage(
+    phone,
+    reply,
+    "Amir",
+    todayStr,
+    tomorrowStr
+  );
 }
 
 async function handleConfirmation(phone, text) {
@@ -138,7 +156,7 @@ async function handleConfirmation(phone, text) {
   );
 
   const reply = "Confirmation is happening";
-  await sendFinalConfirmationWhatsAppMessage(phone, reply);
+  await sendFinalConfirmationWhatsAppMessage(phone, reply, todayStr);
 }
 
 /**
@@ -186,11 +204,6 @@ async function handleInitialState(phone) {
     );
 
     let reply = "🏥 *Welcome to DoctorApp!* 🏥\n\n";
-    reply += "Please choose a doctor:\n\n";
-
-    doctors.rows.forEach((doctor, index) => {
-      reply += `${index + 1}. Dr. ${doctor.name} (${doctor.specialty})\n`;
-    });
 
     // Update user state
     await db.query(
@@ -201,7 +214,7 @@ async function handleInitialState(phone) {
       [phone]
     );
 
-    await sendAppionmentWhatsAppMessage(phone, reply);
+    await sendAppionmentWhatsAppMessage(phone, reply, "amir");
   } catch (error) {
     console.error("Error in handleInitialState:", error);
     await sendInvalidWhatsAppMessage(
