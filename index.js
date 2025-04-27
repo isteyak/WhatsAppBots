@@ -36,11 +36,10 @@ app.post("/webhook", async (req, res) => {
 
   console.log(`here is the entry 123 ${entry}`);
   console.log(`here is message 124 ${message}`);
-
+  let body = req.body;
   console.log(`body is ${body}`);
 
   // Parse the request body from the POST
-  let body = req.body;
 
   // Check the Incoming webhook message
   console.log(JSON.stringify(req.body, null, 2));
