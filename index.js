@@ -34,53 +34,44 @@ app.post("/webhook", async (req, res) => {
   const entry = req.body.entry?.[0];
   const message = entry?.changes?.[0]?.value?.messages?.[0];
 
-  console.log(`here is the entry 123 ${entry}`);
-  console.log(`here is message 124 ${message}`);
-  let body = req.body;
-  console.log(`body is ${body}`);
-
-  // Parse the request body from the POST
-
   // Check the Incoming webhook message
   console.log(JSON.stringify(req.body, null, 2));
 
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
-  if (req.body.object) {
-    if (
-      req.body.entry &&
-      req.body.entry[0].changes &&
-      req.body.entry[0].changes[0] &&
-      req.body.entry[0].changes[0].value.messages &&
-      req.body.entry[0].changes[0].value.messages[0]
-    ) {
-      let phone_number_id =
-        req.body.entry[0].changes[0].value.metadata.phone_number_id;
-      let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-      let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-      console.log(`here phone number id ${phone_number_id}`);
-      console.log(`here from ${from}`);
-      console.log(`here msg body ${msg_body}`);
-    }
-  }
+  const body = req.body;
 
-  if (body.object) {
+  if (body.object === "whatsapp_business_account") {
     const entry = body.entry?.[0];
     const change = entry?.changes?.[0];
-    const message = change?.value?.messages?.[0];
-    console.log(`phone is 126 ${change}`);
-    console.log(`message is  125 ${message}`);
-  }
+    const value = change?.value;
 
-  if (message && message.type === "text") {
-    const from = message.from; // User's phone number (e.g., "9198xxxxxx")
-    const userText = message.text.body; // Actual text message sent
+    const message = value?.messages?.[0];
+    const contact = value?.contacts?.[0];
+
+    const messageType = message?.type;
+    let messageText = null;
+
+    // Handle button and text types
+    if (messageType === "button") {
+      messageText = message?.button?.text;
+    } else if (messageType === "text") {
+      messageText = message?.text?.body;
+    }
+
+    const from = message?.from;
+    const profileName = contact?.profile?.name;
+    const waId = contact?.wa_id;
+
+    console.log("👤 Profile Name:", profileName);
+    console.log("📞 WhatsApp ID:", waId);
+    console.log("📨 Message Type:", messageType);
+    console.log("📤 From:", from);
+    console.log("📝 Message Text:", messageText);
   }
 
   if (message) {
     const phone = message.from;
     const text = message.text?.body || "";
-    console.log(`phone is 126 ${phone}`);
-    console.log(`message is  125 ${text}`);
     await processMessage(phone, text);
   }
 
