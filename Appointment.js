@@ -7,6 +7,7 @@ const {
   sendThanksForConfirmationWhatsAppMessage,
   sendEnterNameWhatsAppMessage,
   sendEnterAgeWhatsAppMessage,
+  sendWhatsAppSlotList,
 } = require("./SendMessages");
 const { parseDate } = require("./ParseDate");
 const db = require("./db");
@@ -53,6 +54,18 @@ async function handleAskAge(phone, text) {
 
   console.log("Today:", todayStr); // e.g., "2025-04-26"
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
+
+  const dates = getNextValidDates(); // e.g., ['2025-05-03', '2025-05-05']
+  const slots = await getAvailableSlotsForDates(1, dates);
+  console.log(slots);
+
+  const limitedSlots = Object.fromEntries(
+    Object.entries(slots).map(([date, slotList]) => [
+      date,
+      slotList.slice(0, 3), // only first 3 slots
+    ])
+  );
+
   await db.query(
     "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
     ["DATE_SELECTION", phone]
@@ -63,13 +76,7 @@ async function handleAskAge(phone, text) {
      ON CONFLICT (phone) DO UPDATE SET age = EXCLUDED.age`,
     [phone, text]
   );
-  await sendSelectionDateWhatsAppMessage(
-    phone,
-    text,
-    "amir",
-    todayStr,
-    tomorrowStr
-  );
+  await sendWhatsAppSlotList(phone, limitedSlots);
 }
 
 async function handleAskName(phone, text) {
@@ -249,4 +256,76 @@ async function handleInitialState(phone) {
       "⚠️ We're experiencing technical difficulties. Please try again later."
     );
   }
+}
+
+function getNextValidDates() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+  const result = [];
+
+  // Helper to clone date and add days
+  const addDays = (date, days) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+
+  // Skip today if it's Sunday
+  if (dayOfWeek !== 0) result.push(today);
+
+  // Determine tomorrow or Monday
+  let tomorrow = addDays(today, 1);
+  if (tomorrow.getDay() === 0) {
+    // If tomorrow is Sunday, use Monday instead
+    tomorrow = addDays(tomorrow, 1);
+  }
+
+  result.push(tomorrow);
+  return result.map((d) => d.toISOString().slice(0, 10)); // Format as 'YYYY-MM-DD'
+}
+
+async function getAvailableSlotsForDates(doctorId, dates) {
+  const allSlots = {};
+
+  for (const date of dates) {
+    const query = `
+    WITH RECURSIVE time_slots AS (
+      SELECT 
+        d.working_hours_start AS slot,
+        d.working_hours_end AS end_time
+      FROM doctors d
+      WHERE d.id = $1
+  
+      UNION ALL
+  
+      SELECT 
+        slot + INTERVAL '15 minutes',
+        end_time
+      FROM time_slots
+      WHERE slot + INTERVAL '15 minutes' < end_time
+    )
+    SELECT to_char(slot, 'HH24:MI') AS slot
+    FROM time_slots
+    WHERE slot NOT IN (
+      SELECT time
+      FROM appointments
+      WHERE doctor_id = $1
+        AND date = $2
+        AND status = 'confirmed'
+    )
+    ORDER BY slot;
+  `;
+
+    const values = [doctorId, date];
+
+    try {
+      const result = await db.query(query, values);
+      allSlots[date] = result.rows.map((row) => row.slot);
+    } catch (err) {
+      console.error(`Error fetching slots for ${date}:`, err);
+      allSlots[date] = [];
+    }
+  }
+
+  return allSlots;
 }

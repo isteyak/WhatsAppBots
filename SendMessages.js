@@ -21,12 +21,9 @@ async function sendInvalidWhatsAppMessage(
       {
         messaging_product: "whatsapp",
         to: phone,
-        type: "template",
-        template: {
-          name: "invalid_selection",
-          language: {
-            code: "en_US",
-          },
+        type: "text",
+        text: {
+          body: "Hi! What’s your name?",
         },
       },
       {
@@ -500,6 +497,60 @@ async function sendEnterAgeWhatsAppMessage(
   }
 }
 
+async function sendWhatsAppSlotList(to, availableSlots) {
+  const sections = Object.entries(availableSlots).map(([date, slots]) => ({
+    title: `Available on ${date}`,
+    rows: slots.map((slot) => ({
+      id: `${date}_${slot}`,
+      title: slot,
+      description: `Slot on ${date} at ${slot}`,
+    })),
+  }));
+
+  const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: to,
+    type: "interactive",
+    interactive: {
+      type: "list",
+      header: {
+        type: "text",
+        text: "Available Appointment Slots",
+      },
+      body: {
+        text: "Please select a time slot for your appointment.",
+      },
+      footer: {
+        text: "You can choose one slot.",
+      },
+      action: {
+        button: "Choose Slot",
+        sections: sections,
+      },
+    },
+  };
+
+  try {
+    const response = await axios.post(
+      "https://graph.facebook.com/v18.0/<WHATSAPP_PHONE_NUMBER_ID>/messages",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+        },
+      }
+    );
+    console.log("Message sent successfully:", response.data);
+  } catch (error) {
+    console.error(
+      "Failed to send WhatsApp message:",
+      error.response?.data || error.message
+    );
+  }
+}
+
 module.exports = {
   sendAppionmentWhatsAppMessage,
   sendSelectionDateWhatsAppMessage,
@@ -509,4 +560,5 @@ module.exports = {
   sendThanksForConfirmationWhatsAppMessage,
   sendEnterNameWhatsAppMessage,
   sendEnterAgeWhatsAppMessage,
+  sendWhatsAppSlotList,
 };
