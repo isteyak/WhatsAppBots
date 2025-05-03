@@ -98,7 +98,7 @@ async function handleDateSelection(phone, text) {
 
   const todayStr = formatDate(today);
   const tomorrowStr = formatDate(tomorrow);
-
+  const currentTime = formatTime(today);
   console.log("Today:", todayStr); // e.g., "2025-04-26"
   console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
 
