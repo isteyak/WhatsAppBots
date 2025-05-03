@@ -95,7 +95,7 @@ async function handleDateSelection(phone, text) {
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
   const formatDate = (date) => date.toISOString().split("T")[0];
-
+  const formatTime = (date) => date.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
   const todayStr = formatDate(today);
   const tomorrowStr = formatDate(tomorrow);
   const currentTime = formatTime(today);
@@ -186,6 +186,7 @@ async function handleConfirmation(phone, text) {
     "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
     ["CONFIRMED", today, phone]
   );
+  const reply = "mere ges hd";
 
   await sendThanksForConfirmationWhatsAppMessage(phone, todayStr, reply);
 }
