@@ -5,6 +5,8 @@ const {
   sendInvalidWhatsAppMessage,
   sendErrorWhatsAppMessage,
   sendThanksForConfirmationWhatsAppMessage,
+  sendEnterNameWhatsAppMessage,
+  sendEnterAgeWhatsAppMessage,
 } = require("./SendMessages");
 const { parseDate } = require("./ParseDate");
 const db = require("./db");
@@ -16,6 +18,12 @@ async function processMessage(phone, text) {
   switch (user.current_state) {
     case "INITIAL":
       return handleInitialState(phone);
+    case "BOOK_APPOINMENT":
+      return handleBookAppoinmnet(phone);
+    case "ASK_NAME":
+      return handleAskName(phone, text);
+    case "ASK_AGE":
+      return handleAskAge(phone, text);
     case "DATE_SELECTION":
       return handleDateSelection(phone, text);
     case "CONFIRMATION":
@@ -25,6 +33,58 @@ async function processMessage(phone, text) {
     default:
       return handleInitialState(phone);
   }
+}
+async function handleBookAppoinmnet(phone) {
+  await db.query(
+    "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+    ["ASK_NAME", phone]
+  );
+  await sendEnterNameWhatsAppMessage(phone, "enter name", "Amir patel");
+}
+async function handleAskAge(phone, text) {
+  const user = await getUserState(phone);
+
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  const formatDate = (date) => date.toISOString().split("T")[0];
+
+  const todayStr = formatDate(today);
+  const tomorrowStr = formatDate(tomorrow);
+
+  console.log("Today:", todayStr); // e.g., "2025-04-26"
+  console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
+  await db.query(
+    "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+    ["DATE_SELECTION", phone]
+  );
+  await db.query(
+    `INSERT INTO patients (phone, age) 
+     VALUES ($1, $2) 
+     ON CONFLICT (phone) DO UPDATE SET age = EXCLUDED.age`,
+    [phone, text]
+  );
+  await sendSelectionDateWhatsAppMessage(
+    phone,
+    text,
+    "amir",
+    todayStr,
+    tomorrowStr
+  );
+}
+
+async function handleAskName(phone, text) {
+  await db.query(
+    "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+    ["ASK_AGE", phone]
+  );
+  await db.query(
+    `INSERT INTO patients (phone, name) 
+     VALUES ($1, $2) 
+     ON CONFLICT (phone) DO UPDATE SET name = EXCLUDED.name`,
+    [phone, text]
+  );
+  await sendEnterAgeWhatsAppMessage(phone, text, "under 18yr");
 }
 
 async function processInitialMessage(phone, text) {
@@ -155,8 +215,14 @@ async function handleConfirmation(phone, text) {
     [1, p.id, todayStr, currentTime, "confirmed", "pending", false]
   );
 
-  const reply = "Confirmation is happening";
-  await sendFinalConfirmationWhatsAppMessage(phone, reply, todayStr);
+  const reply =
+    "Confirmation is happening and patient name is " +
+    p.name +
+    "And age is" +
+    p.age +
+    "date is " +
+    todayStr;
+  await sendFinalConfirmationWhatsAppMessage(phone, reply, reply);
 }
 
 /**
@@ -205,13 +271,9 @@ async function handleInitialState(phone) {
 
     let reply = "🏥 *Welcome to DoctorApp!* 🏥\n\n";
 
-    // Update user state
     await db.query(
-      `INSERT INTO user_states (phone_number, current_state) 
-       VALUES ($1, 'DATE_SELECTION')
-       ON CONFLICT (phone_number) 
-       DO UPDATE SET current_state = 'DATE_SELECTION', updated_at = NOW()`,
-      [phone]
+      "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+      ["BOOK_APPOINMENT", phone]
     );
 
     await sendAppionmentWhatsAppMessage(phone, reply, "amir");

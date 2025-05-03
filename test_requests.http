@@ -1,6 +1,6 @@
 ### 1. Start booking flow
 ### Test booking flow
-POST https://whats-app-bots-git-main-isteyaks-projects.vercel.app/webhook
+POST https://whats-app-bots.vercel.app/webhook
 Content-Type: application/json
 
 {
@@ -16,20 +16,390 @@ Content-Type: application/json
   }]
 }
 
-### 2. Select doctor
-POST http://localhost:3000/webhook
-Content-Type: application/json
 
-{
-  "phone": "911234567890",
-  "message": "1"
-}
 
 ### 3. Select date
 POST http://localhost:3000/webhook
 Content-Type: application/json
 
 {
-  "phone": "911234567890",
-  "message": "25/12"
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "context": {
+                  "from": "15556401254",
+                  "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAERgSOTUyODcxN0EzOEQzQTQ3MUNBAA=="
+                },
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggOEUyNjhFQTNBNjQwRTI1QUExOTQ3RDY4NkUwOENDQUMA",
+                "timestamp": "1745732574",
+                "type": "button",
+                "button": {
+                  "payload": "Book Appointment",
+                  "text": "Book Appointment"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
 }
+
+
+### 3. Select date
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "context": {
+                  "from": "15556401254",
+                  "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAERgSOTUyODcxN0EzOEQzQTQ3MUNBAA=="
+                },
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggOEUyNjhFQTNBNjQwRTI1QUExOTQ3RDY4NkUwOENDQUMA",
+                "timestamp": "1745732574",
+                "type": "button",
+                "button": {
+                  "payload": "Book Appointment",
+                  "text": "Book Appointment"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+
+### Hi there
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggMkUwMTA1QkUxOUQzQjMwOTM2RjVFOTIwRjI5OThCNkQA",
+                "timestamp": "1745738105",
+                "text": {
+                  "body": "Hi there"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+### 3. Book Apoinment
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "context": {
+                  "from": "15556401254",
+                  "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAERgSOTUyODcxN0EzOEQzQTQ3MUNBAA=="
+                },
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggOEUyNjhFQTNBNjQwRTI1QUExOTQ3RDY4NkUwOENDQUMA",
+                "timestamp": "1745732574",
+                "type": "button",
+                "button": {
+                  "payload": "Book Appointment",
+                  "text": "Book Appointment"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+### Ask Name
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggMkUwMTA1QkUxOUQzQjMwOTM2RjVFOTIwRjI5OThCNkQA",
+                "timestamp": "1745738105",
+                "text": {
+                  "body": "Isteyak Ansari"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+### Ask Age 
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggMkUwMTA1QkUxOUQzQjMwOTM2RjVFOTIwRjI5OThCNkQA",
+                "timestamp": "1745738105",
+                "text": {
+                  "body": "45"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+### 3. Date Selection
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "context": {
+                  "from": "15556401254",
+                  "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAERgSOTUyODcxN0EzOEQzQTQ3MUNBAA=="
+                },
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggOEUyNjhFQTNBNjQwRTI1QUExOTQ3RDY4NkUwOENDQUMA",
+                "timestamp": "1745732574",
+                "type": "button",
+                "button": {
+                  "payload": "Today",
+                  "text": "Today"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+### 3. Submit confirmation
+POST http://localhost:3000/webhook
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "589761680786744",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556401254",
+              "phone_number_id": "658646170655486"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Stranger🎆"
+                },
+                "wa_id": "919834953461"
+              }
+            ],
+            "messages": [
+              {
+                "context": {
+                  "from": "15556401254",
+                  "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAERgSOTUyODcxN0EzOEQzQTQ3MUNBAA=="
+                },
+                "from": "919834953461",
+                "id": "wamid.HBgMOTE5ODM0OTUzNDYxFQIAEhggOEUyNjhFQTNBNjQwRTI1QUExOTQ3RDY4NkUwOENDQUMA",
+                "timestamp": "1745732574",
+                "type": "button",
+                "button": {
+                  "payload": "Submit Confirmation",
+                  "text": "Submit Confirmation"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+
+
+### 2. Get access token
+GET https://graph.facebook.com/v22.0/oauth/access_token?grant_type=fb_exchange_token&client_id=970828845263761&client_secret=4538c8f555e9590418d8b9871cf69ea6&fb_exchange_token=EAANy9rR1q5EBOZCj07kA5ZCm0FROGZCQQfNGbEl6U7OcYl7rvZBxw88Tdgbio3ZAxs2aWNURF1q1bco9t7ET554Owe1dpoxm7x6HLuJZBMvz54JiSytVVWMUJ7ngStRmFflDnt7QjGrWDX6GZAse2c0OWZBFaqcgAkdvQ8tbafVT27XRPmwXhoy9os4IlXBrY1s9X256cpNIwY4NNmzk500tEcGTyRpo2NBZCWhQZD
+
+### google
+GET https://google.com

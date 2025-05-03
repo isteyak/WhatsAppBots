@@ -336,10 +336,6 @@ async function invalid_selection(phone, message, messageType = "text") {
       JSON.stringify(error.response?.data, null, 2)
     );
 
-    // console.error(
-    //   "❌ Error sending message:",
-    //   error.response?.data || error.message
-    // );
     throw error;
   }
 }
@@ -392,6 +388,118 @@ async function sendErrorWhatsAppMessage(phone, message, messageType = "text") {
   }
 }
 
+/**
+ * Sends a WhatsApp message to a user
+ * @param {string} phone - Recipient phone number (with country code, e.g., "911234567890")
+ * @param {string} message - Text message to send
+ * @param {string} [messageType="text"] - Type of message (text, image, etc.)
+ */
+async function sendEnterNameWhatsAppMessage(
+  phone,
+  message,
+  Name,
+  messageType = "text"
+) {
+  try {
+    if (messageType !== "text") {
+      throw new Error("Currently, only 'text' messages are supported.");
+    }
+
+    const response = await axios.post(
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to: phone,
+        type: "template",
+        template: {
+          name: "ask_name",
+          language: {
+            code: "en",
+          },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", parameter_name: "name", text: Name },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("✅ Message sent:", JSON.stringify(response.data, null, 2));
+  } catch (error) {
+    console.error(
+      "❌ Error response:",
+      JSON.stringify(error.response?.data, null, 2)
+    );
+
+    throw error;
+  }
+}
+
+/**
+ * Sends a WhatsApp message to a user
+ * @param {string} phone - Recipient phone number (with country code, e.g., "911234567890")
+ * @param {string} message - Text message to send
+ * @param {string} [messageType="text"] - Type of message (text, image, etc.)
+ */
+async function sendEnterAgeWhatsAppMessage(
+  phone,
+  message,
+  age,
+  messageType = "text"
+) {
+  try {
+    if (messageType !== "text") {
+      throw new Error("Currently, only 'text' messages are supported.");
+    }
+
+    const response = await axios.post(
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to: phone,
+        type: "template",
+        template: {
+          name: "ask_age",
+          language: {
+            code: "en",
+          },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", parameter_name: "age", text: age }],
+            },
+          ],
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("✅ Message sent:", JSON.stringify(response.data, null, 2));
+  } catch (error) {
+    console.error(
+      "❌ Error response:",
+      JSON.stringify(error.response?.data, null, 2)
+    );
+
+    throw error;
+  }
+}
+
 module.exports = {
   sendAppionmentWhatsAppMessage,
   sendSelectionDateWhatsAppMessage,
@@ -399,4 +507,6 @@ module.exports = {
   sendInvalidWhatsAppMessage,
   sendErrorWhatsAppMessage,
   sendThanksForConfirmationWhatsAppMessage,
+  sendEnterNameWhatsAppMessage,
+  sendEnterAgeWhatsAppMessage,
 };

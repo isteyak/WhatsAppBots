@@ -69,11 +69,11 @@ app.post("/webhook", async (req, res) => {
       console.log("📤 From:", from);
       console.log("📝 Message Text:", messageText);
 
-      if (messageType === "button") {
-        await processMessage(from, messageText);
-      } else {
-        await processInitialMessage(from, messageText);
-      }
+      // if (messageType === "button") {
+      await processMessage(from, messageText);
+      // } else {
+      // await processInitialMessage(from, messageText);
+      //}
     }
 
     res.sendStatus(200);
