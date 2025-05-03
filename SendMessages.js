@@ -533,7 +533,7 @@ async function sendWhatsAppSlotList(to, availableSlots) {
 
   try {
     const response = await axios.post(
-      "https://graph.facebook.com/v18.0/<WHATSAPP_PHONE_NUMBER_ID>/messages",
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       payload,
       {
         headers: {
