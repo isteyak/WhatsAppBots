@@ -186,9 +186,8 @@ async function handleConfirmation(phone, text) {
     "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
     ["CONFIRMED", today, phone]
   );
-  const reply = "mere ges hd";
 
-  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr, reply);
+  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr);
 }
 
 /**
