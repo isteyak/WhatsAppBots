@@ -28,8 +28,7 @@ async function processMessage(phone, text) {
       return handleDateSelection(phone, text);
     case "CONFIRMATION":
       return handleConfirmation(phone, text);
-    case "CONFIRMED":
-      return handleConfirmed(phone, text);
+
     default:
       return handleInitialState(phone);
   }
@@ -89,22 +88,6 @@ async function handleAskName(phone, text) {
 
 module.exports = { processMessage };
 
-async function handleConfirmed(phone, text) {
-  const user = await getUserState(phone);
-  const reply = "confirmaiton happeds";
-  const today = new Date();
-  const formatDate = (date) => date.toISOString().split("T")[0];
-  const todayStr = formatDate(today);
-  await db.query(
-    `INSERT INTO user_states (phone_number, current_state) 
-     VALUES ($1, 'INITIAL')
-     ON CONFLICT (phone_number) 
-     DO UPDATE SET current_state = 'UNKNOWN', updated_at = NOW()`,
-    [phone]
-  );
-  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr);
-}
-
 async function handleDateSelection(phone, text) {
   const user = await getUserState(phone);
 
@@ -129,51 +112,9 @@ async function handleDateSelection(phone, text) {
 
   // Check doctor availability
   //const slots = await getAvailableTimeSlots(user.selected_doctor_id, date);
-
   await db.query(
     "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
     ["CONFIRMATION", today, phone]
-  );
-  const reply = "date selection happening";
-  await sendSelectionDateWhatsAppMessage(
-    phone,
-    reply,
-    "Amir",
-    todayStr,
-    tomorrowStr
-  );
-}
-
-async function handleConfirmation(phone, text) {
-  //const date = parseDate(text); // DD/MM → Date object
-  const user = await getUserState(phone);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-
-  const formatDate = (date) => date.toISOString().split("T")[0]; // "YYYY-MM-DD"
-  const formatTime = (date) => date.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
-
-  const todayStr = formatDate(today);
-  const tomorrowStr = formatDate(tomorrow);
-  const currentTime = formatTime(today);
-
-  console.log("Today:", todayStr); // e.g., "2025-04-26"
-  console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
-
-  if (!today) {
-    return sendInvalidWhatsAppMessage(
-      phone,
-      "❌ Invalid date. Use DD/MM format."
-    );
-  }
-
-  // Check doctor availability
-  //const slots = await getAvailableTimeSlots(user.selected_doctor_id, date);
-
-  await db.query(
-    "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
-    ["CONFIRMED", today, phone]
   );
   await db.query(
     `INSERT INTO public.patients (phone, created_at) 
@@ -207,11 +148,46 @@ async function handleConfirmation(phone, text) {
   const reply =
     "Confirmation is happening and patient name is " +
     p.name +
-    "And age is" +
+    " And age is" +
     p.age +
-    "date is " +
+    " date is " +
     todayStr;
   await sendFinalConfirmationWhatsAppMessage(phone, reply, reply);
+}
+
+async function handleConfirmation(phone, text) {
+  //const date = parseDate(text); // DD/MM → Date object
+  const user = await getUserState(phone);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const formatDate = (date) => date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const formatTime = (date) => date.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
+
+  const todayStr = formatDate(today);
+  const tomorrowStr = formatDate(tomorrow);
+  const currentTime = formatTime(today);
+
+  console.log("Today:", todayStr); // e.g., "2025-04-26"
+  console.log("Tomorrow:", tomorrowStr); // e.g., "2025-04-27"
+
+  if (!today) {
+    return sendInvalidWhatsAppMessage(
+      phone,
+      "❌ Invalid date. Use DD/MM format."
+    );
+  }
+
+  // Check doctor availability
+  //const slots = await getAvailableTimeSlots(user.selected_doctor_id, date);
+
+  await db.query(
+    "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
+    ["CONFIRMED", today, phone]
+  );
+
+  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr, reply);
 }
 
 /**
