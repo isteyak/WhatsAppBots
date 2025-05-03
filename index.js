@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { processMessage, processInitialMessage } = require("./Appointment");
+const { processMessage } = require("./Appointment");
 const doctorsRouter = require("./routes/doctors");
 
 //import processMessage from "./Appointment.js";

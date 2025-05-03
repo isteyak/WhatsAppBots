@@ -87,18 +87,7 @@ async function handleAskName(phone, text) {
   await sendEnterAgeWhatsAppMessage(phone, text, "under 18yr");
 }
 
-async function processInitialMessage(phone, text) {
-  await db.query(
-    `INSERT INTO user_states (phone_number, current_state) 
-     VALUES ($1, 'DATE_SELECTION')
-     ON CONFLICT (phone_number) 
-     DO UPDATE SET current_state = 'DATE_SELECTION', updated_at = NOW()`,
-    [phone]
-  );
-  await sendAppionmentWhatsAppMessage(phone, text, "Amir Ansari");
-}
-
-module.exports = { processMessage, processInitialMessage };
+module.exports = { processMessage };
 
 async function handleConfirmed(phone, text) {
   const user = await getUserState(phone);
