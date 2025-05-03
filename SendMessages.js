@@ -537,8 +537,8 @@ async function sendWhatsAppSlotList(to, availableSlots) {
       payload,
       {
         headers: {
+          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
         },
       }
     );
