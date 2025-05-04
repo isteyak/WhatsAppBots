@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const { processMessage } = require("./Appointment");
 const doctorsRouter = require("./routes/doctors");
+const path = require("path");
 
 //import processMessage from "./Appointment.js";
 //import doctorsRouter from "./routes/doctors.js";
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/doctors", doctorsRouter);
+app.use("/Images", express.static(path.join(__dirname, "Images")));
 
 // This works for both local development and Vercel
 app.get("/", (req, res) => {
@@ -57,6 +59,25 @@ app.post("/webhook", async (req, res) => {
         messageText = message?.button?.text;
       } else if (messageType === "text") {
         messageText = message?.text?.body;
+      }
+
+      if (
+        message?.type === "interactive" &&
+        message.interactive?.type === "list_reply"
+      ) {
+        const userPhone = message.from;
+        const selectedId = message.interactive.list_reply.id; // e.g. "2025-05-03_09:00"
+        const [date, time] = selectedId.split("_");
+
+        // 4. Update user state
+        await db.query(
+          `
+        UPDATE user_states
+        SET selected_date = $1, selected_time = $2, updated_at = NOW()
+        WHERE phone_number = $3
+        `,
+          [appointmentId, date, time, userPhone]
+        );
       }
 
       const from = message?.from;

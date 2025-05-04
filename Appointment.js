@@ -39,7 +39,7 @@ async function handleBookAppoinmnet(phone) {
     "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
     ["ASK_NAME", phone]
   );
-  await sendEnterNameWhatsAppMessage(phone, "enter name", "Amir patel");
+  await sendEnterNameWhatsAppMessage(phone, "enter name", "Dr. Amir Hospital");
 }
 async function handleAskAge(phone, text) {
   const user = await getUserState(phone);
@@ -76,7 +76,14 @@ async function handleAskAge(phone, text) {
      ON CONFLICT (phone) DO UPDATE SET age = EXCLUDED.age`,
     [phone, text]
   );
-  await sendWhatsAppSlotList(phone, limitedSlots);
+  const result = await db.query(
+    `SELECT name, age FROM patients WHERE phone = $1`,
+    [phone]
+  );
+
+  const patient = result.rows[0]; // patient.name and patient.age
+
+  await sendWhatsAppSlotList(phone, limitedSlots, patient.name, patient.age);
 }
 
 async function handleAskName(phone, text) {
@@ -137,6 +144,11 @@ async function handleDateSelection(phone, text) {
 
   const p = patient.rows[0];
 
+  const userState = await db.query(
+    "SELECT * FROM public.user_state where phone = $1",
+    [phone]
+  );
+  const u = userState.rows[0];
   await db.query(
     `INSERT INTO public.appointments 
       (doctor_id, patient_id, date, time, status, payment_status, reminder_sent) 
@@ -149,7 +161,7 @@ async function handleDateSelection(phone, text) {
        status = EXCLUDED.status,
        payment_status = EXCLUDED.payment_status,
        reminder_sent = EXCLUDED.reminder_sent`,
-    [1, p.id, todayStr, currentTime, "confirmed", "pending", false]
+    [1, p.id, u.selected_date, u.selected_time, "confirmed", "pending", false]
   );
 
   const reply =
@@ -159,7 +171,14 @@ async function handleDateSelection(phone, text) {
     p.age +
     " date is " +
     todayStr;
-  await sendFinalConfirmationWhatsAppMessage(phone, reply, reply);
+  await sendFinalConfirmationWhatsAppMessage(
+    phone,
+    reply,
+    p.name,
+    p.age,
+    u.selected_date,
+    u.selected_time
+  );
 }
 
 async function handleConfirmation(phone, text) {
@@ -194,7 +213,25 @@ async function handleConfirmation(phone, text) {
     ["CONFIRMED", today, phone]
   );
 
-  await sendThanksForConfirmationWhatsAppMessage(phone, todayStr);
+  const userState = await d.query(
+    "SELECT * FROM public.user_states WHERE phone_number = $1",
+    [phone]
+  );
+  const u = userState.rows[0];
+  const patient = await db.query(
+    "SELECT * FROM public.patients WHERE phone = $1",
+    [phone]
+  );
+
+  const p = patient.rows[0];
+
+  await sendThanksForConfirmationWhatsAppMessage(
+    phone,
+    p.name,
+    p.age,
+    u.selected_date,
+    u.selected_time
+  );
 }
 
 /**

@@ -66,6 +66,16 @@ async function sendAppionmentWhatsAppMessage(
       throw new Error("Currently, only 'text' messages are supported.");
     }
 
+    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+
+    const imageUrl = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+    checkImageExists(pathstr).then((exists) => {
+      if (exists) {
+        console.log("Image is accessible.");
+      } else {
+        console.log("Image is not accessible.");
+      }
+    });
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -73,15 +83,23 @@ async function sendAppionmentWhatsAppMessage(
         to: phone,
         type: "template",
         template: {
-          name: "appointment",
+          name: "appointment_message",
           language: {
             code: "en",
           },
           components: [
             {
               type: "header",
-              parameters: [{ type: "text", text: drName }],
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: pathstr,
+                  },
+                },
+              ],
             },
+            // Add body parameters if your template expects them
           ],
         },
       },
@@ -181,14 +199,17 @@ async function sendSelectionDateWhatsAppMessage(
  */
 async function sendThanksForConfirmationWhatsAppMessage(
   phone,
+  patientname,
+  patientAge,
   date,
+  time,
   messageType = "text"
 ) {
   try {
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-
+    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -203,9 +224,21 @@ async function sendThanksForConfirmationWhatsAppMessage(
           },
           components: [
             {
+              type: "header",
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: pathstr,
+                  },
+                },
+              ],
               type: "body",
               parameters: [
-                { type: "text", parameter_name: "date", text: date },
+                { type: "text", text: patientname },
+                { type: "text", text: patientage },
+                { type: "text", text: date },
+                { type: "text", text: time },
               ],
             },
           ],
@@ -243,13 +276,17 @@ async function sendThanksForConfirmationWhatsAppMessage(
 async function sendFinalConfirmationWhatsAppMessage(
   phone,
   message,
+  patientname,
+  patientage,
   date,
+  time,
   messageType = "text"
 ) {
   try {
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
+    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
 
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -264,8 +301,22 @@ async function sendFinalConfirmationWhatsAppMessage(
           },
           components: [
             {
+              type: "header",
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: pathstr,
+                  },
+                },
+              ],
               type: "body",
-              parameters: [{ type: "text", text: date }],
+              parameters: [
+                { type: "text", text: patientname },
+                { type: "text", text: patientage },
+                { type: "text", text: date },
+                { type: "text", text: time },
+              ],
             },
           ],
         },
@@ -401,7 +452,7 @@ async function sendEnterNameWhatsAppMessage(
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-
+    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -415,6 +466,15 @@ async function sendEnterNameWhatsAppMessage(
           },
           components: [
             {
+              type: "header",
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: pathstr,
+                  },
+                },
+              ],
               type: "body",
               parameters: [
                 { type: "text", parameter_name: "name", text: Name },
@@ -451,14 +511,14 @@ async function sendEnterNameWhatsAppMessage(
 async function sendEnterAgeWhatsAppMessage(
   phone,
   message,
-  age,
+  patientname,
   messageType = "text"
 ) {
   try {
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-
+    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -472,8 +532,23 @@ async function sendEnterAgeWhatsAppMessage(
           },
           components: [
             {
+              type: "header",
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: pathstr,
+                  },
+                },
+              ],
               type: "body",
-              parameters: [{ type: "text", parameter_name: "age", text: age }],
+              parameters: [
+                {
+                  type: "text",
+                  parameter_name: "patient_name",
+                  text: patientname,
+                },
+              ],
             },
           ],
         },
@@ -497,7 +572,12 @@ async function sendEnterAgeWhatsAppMessage(
   }
 }
 
-async function sendWhatsAppSlotList(to, availableSlots) {
+async function sendWhatsAppSlotList(
+  to,
+  availableSlots,
+  patientName,
+  patientAge
+) {
   const sections = Object.entries(availableSlots).map(([date, slots]) => ({
     title: `Available on ${date}`,
     rows: slots.map((slot) => ({
@@ -510,7 +590,7 @@ async function sendWhatsAppSlotList(to, availableSlots) {
   const payload = {
     messaging_product: "whatsapp",
     recipient_type: "individual",
-    to: to,
+    to: to, // WhatsApp number
     type: "interactive",
     interactive: {
       type: "list",
@@ -519,10 +599,10 @@ async function sendWhatsAppSlotList(to, availableSlots) {
         text: "Available Appointment Slots",
       },
       body: {
-        text: "Please select a time slot for your appointment.",
+        text: `Hello ${patientName}, age ${patientAge} 👋\n\nYou're booking an appointment at Dr. Amir Hospital.\n\nPlease select one of the available time slots below.`,
       },
       footer: {
-        text: "You can choose one slot.",
+        text: "Tap 'Choose Slot' to view options.",
       },
       action: {
         button: "Choose Slot",
@@ -562,3 +642,13 @@ module.exports = {
   sendEnterAgeWhatsAppMessage,
   sendWhatsAppSlotList,
 };
+
+async function checkImageExists(url) {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    return response.ok; // true if status is 200-299
+  } catch (error) {
+    console.error("Error checking image:", error);
+    return false;
+  }
+}
