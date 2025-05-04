@@ -225,6 +225,8 @@ async function sendThanksForConfirmationWhatsAppMessage(
                   },
                 },
               ],
+            },
+            {
               type: "body",
               parameters: [
                 { type: "text", text: patientname },
@@ -302,6 +304,8 @@ async function sendFinalConfirmationWhatsAppMessage(
                   },
                 },
               ],
+            },
+            {
               type: "body",
               parameters: [
                 { type: "text", text: patientname },
@@ -467,9 +471,15 @@ async function sendEnterNameWhatsAppMessage(
                   },
                 },
               ],
+            },
+            {
               type: "body",
               parameters: [
-                { type: "text", parameter_name: "name", text: Name },
+                {
+                  type: "text",
+                  parameter_name: "name",
+                  text: Name, // remove `parameter_name`, it's not needed
+                },
               ],
             },
           ],
@@ -533,12 +543,14 @@ async function sendEnterAgeWhatsAppMessage(
                   },
                 },
               ],
+            },
+            {
               type: "body",
               parameters: [
                 {
                   type: "text",
                   parameter_name: "patient_name",
-                  text: patientname,
+                  text: patientname, // remove `parameter_name`, it's not needed
                 },
               ],
             },
