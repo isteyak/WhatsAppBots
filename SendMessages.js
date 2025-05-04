@@ -66,16 +66,8 @@ async function sendAppionmentWhatsAppMessage(
       throw new Error("Currently, only 'text' messages are supported.");
     }
 
-    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+    const pathstr = `${process.env.APPLICATIONURL}/Images/AmirHospital.jpg`;
 
-    const imageUrl = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
-    checkImageExists(pathstr).then((exists) => {
-      if (exists) {
-        console.log("Image is accessible.");
-      } else {
-        console.log("Image is not accessible.");
-      }
-    });
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -286,7 +278,7 @@ async function sendFinalConfirmationWhatsAppMessage(
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+    const pathstr = `${process.env.APPLICATIONURL}/Images/AmirHospital.jpg`;
 
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -452,7 +444,7 @@ async function sendEnterNameWhatsAppMessage(
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+    const pathstr = `${process.env.APPLICATIONURL}/Images/AmirHospitalLogo.png`;
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -518,7 +510,7 @@ async function sendEnterAgeWhatsAppMessage(
     if (messageType !== "text") {
       throw new Error("Currently, only 'text' messages are supported.");
     }
-    const pathstr = `${process.env.APPLICATIONURL}/Images/Confirmation.png`;
+    const pathstr = `${process.env.APPLICATIONURL}/Images/AmirHospitalLogo.png`;
     const response = await axios.post(
       `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
@@ -642,13 +634,3 @@ module.exports = {
   sendEnterAgeWhatsAppMessage,
   sendWhatsAppSlotList,
 };
-
-async function checkImageExists(url) {
-  try {
-    const response = await fetch(url, { method: "HEAD" });
-    return response.ok; // true if status is 200-299
-  } catch (error) {
-    console.error("Error checking image:", error);
-    return false;
-  }
-}
