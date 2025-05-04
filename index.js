@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/doctors", doctorsRouter);
-app.use("/Images", express.static(path.join(__dirname, "Images")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // This works for both local development and Vercel
 app.get("/", (req, res) => {
