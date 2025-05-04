@@ -230,7 +230,7 @@ async function sendThanksForConfirmationWhatsAppMessage(
               type: "body",
               parameters: [
                 { type: "text", text: patientname },
-                { type: "text", text: patientage },
+                { type: "text", text: patientAge },
                 { type: "text", text: date },
                 { type: "text", text: time },
               ],

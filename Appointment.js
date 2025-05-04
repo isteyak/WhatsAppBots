@@ -127,8 +127,8 @@ async function handleDateSelection(phone, text) {
   // Check doctor availability
   //const slots = await getAvailableTimeSlots(user.selected_doctor_id, date);
   await db.query(
-    "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
-    ["CONFIRMATION", today, phone]
+    "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+    ["CONFIRMATION", phone]
   );
   await db.query(
     `INSERT INTO public.patients (phone, created_at) 
@@ -145,7 +145,7 @@ async function handleDateSelection(phone, text) {
   const p = patient.rows[0];
 
   const userState = await db.query(
-    "SELECT * FROM public.user_state where phone = $1",
+    "SELECT * FROM user_states where phone_number = $1",
     [phone]
   );
   const u = userState.rows[0];
@@ -209,11 +209,11 @@ async function handleConfirmation(phone, text) {
   //const slots = await getAvailableTimeSlots(user.selected_doctor_id, date);
 
   await db.query(
-    "UPDATE user_states SET current_state = $1, selected_date = $2 WHERE phone_number = $3",
-    ["CONFIRMED", today, phone]
+    "UPDATE user_states SET current_state = $1 WHERE phone_number = $2",
+    ["CONFIRMED", phone]
   );
 
-  const userState = await d.query(
+  const userState = await db.query(
     "SELECT * FROM public.user_states WHERE phone_number = $1",
     [phone]
   );

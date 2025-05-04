@@ -3,6 +3,7 @@ const app = express();
 const { processMessage } = require("./Appointment");
 const doctorsRouter = require("./routes/doctors");
 const path = require("path");
+const db = require("./db");
 
 //import processMessage from "./Appointment.js";
 //import doctorsRouter from "./routes/doctors.js";
@@ -60,7 +61,7 @@ app.post("/webhook", async (req, res) => {
       } else if (messageType === "text") {
         messageText = message?.text?.body;
       }
-
+      const from = message?.from;
       if (
         message?.type === "interactive" &&
         message.interactive?.type === "list_reply"
@@ -72,15 +73,14 @@ app.post("/webhook", async (req, res) => {
         // 4. Update user state
         await db.query(
           `
-        UPDATE user_states
-        SET selected_date = $1, selected_time = $2, updated_at = NOW()
-        WHERE phone_number = $3
-        `,
-          [appointmentId, date, time, userPhone]
+          UPDATE user_states
+          SET selected_date = $1, selected_time = $2, updated_at = NOW()
+          WHERE phone_number = $3
+          `,
+          [date, time, from]
         );
       }
 
-      const from = message?.from;
       const profileName = contact?.profile?.name;
       const waId = contact?.wa_id;
 
