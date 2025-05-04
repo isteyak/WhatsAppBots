@@ -1,9 +1,9 @@
 const express = require("express");
-const router = express.Router();
+const doctorRouter = express.Router();
 const db = require("../db");
 
 // GET all doctors
-router.get("/", async (req, res) => {
+doctorRouter.get("/", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM doctors");
     res.json({
@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET doctors by specialty
-router.get("/specialty/:specialty", async (req, res) => {
+doctorRouter.get("/specialty/:specialty", async (req, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM doctors WHERE specialty = $1",
@@ -46,4 +46,4 @@ router.get("/specialty/:specialty", async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = doctorRouter;

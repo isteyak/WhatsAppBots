@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
 const { processMessage } = require("./Appointment");
-const doctorsRouter = require("./routes/doctors");
+const doctorRouter = require("./routes/doctors");
+const loginRouter = require("./routes/login");
+const appointmentApiRouter = require("./routes/AppointmentApi");
+const registerRouter = require("./routes/registeruser");
 const path = require("path");
 const db = require("./db");
 
@@ -12,6 +15,9 @@ require("dotenv").config();
 app.use(express.json());
 
 // Routes
+app.use("/api/register", registerRouter);
+app.use("/api/login", loginRouter);
+app.use("api/appointments", appointmentApiRouter);
 app.use("/api/doctors", doctorsRouter);
 app.use(express.static(path.join(__dirname, "public")));
 
