@@ -18,7 +18,7 @@ app.use(express.json());
 app.use("/api/register", registerRouter);
 app.use("/api/login", loginRouter);
 app.use("api/appointments", appointmentApiRouter);
-app.use("/api/doctors", doctorsRouter);
+app.use("/api/doctors", doctorRouter);
 app.use(express.static(path.join(__dirname, "public")));
 
 // This works for both local development and Vercel
