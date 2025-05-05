@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { processMessage } = require("./appointment");
+const { processMessage } = require("./Appointment");
 const doctorRouter = require("./routes/doctors");
 const loginRouter = require("./routes/login");
 const appointmentApiRouter = require("./routes/appointmentapi");
