@@ -7,12 +7,26 @@ const appointmentApiRouter = require("./routes/AppointmentApi");
 const registerRouter = require("./routes/registeruser");
 const path = require("path");
 const db = require("./db");
+const session = require("express-session");
 
 //import processMessage from "./Appointment.js";
 //import doctorsRouter from "./routes/doctors.js";
 require("dotenv").config();
 
 app.use(express.json());
+
+//authenticaiton based on session
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "mysecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // set to true if using HTTPS
+      maxAge: 1000 * 60 * 60, // 1 hour
+    },
+  })
+);
 
 // Routes
 app.use("/api/register", registerRouter);
