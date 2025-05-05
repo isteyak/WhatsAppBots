@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { processMessage } = require("./Appointment");
+const { processMessage } = require("./appointment");
 const doctorRouter = require("./routes/doctors");
 const loginRouter = require("./routes/login");
 const appointmentApiRouter = require("./routes/appointmentapi");
@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   var sn = process.env.DATABASE_URL;
   res.send(
-    `Hello World from Node.js server deployed on Vercel! Gap Going Great huh. ${process.env.VERIFY_WHATS_APP_TOKEN}`
+    `Hello World from Node.js server deployed on Vercel! Gap Going Great huh. test ${process.env.VERIFY_WHATS_APP_TOKEN}`
   );
 });
 
