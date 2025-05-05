@@ -1,5 +1,5 @@
 const express = require("express");
-const authMiddleware = require("../middleware/Authentication");
+const authMiddleware = require("../middleware/authentication");
 const db = require("../db");
 const appoitnmetApiRouter = express.Router();
 
